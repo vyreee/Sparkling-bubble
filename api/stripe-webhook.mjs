@@ -49,6 +49,21 @@ export default async function handler(req, res) {
     case 'checkout.session.completed': {
       const session = stripeEvent.data.object;
 
+      // Get customer details if email is not directly available
+      let customerEmail = session.customer_email;
+      let customerName = session.metadata?.customerName;
+      
+      // If email is missing, fetch from customer object
+      if (!customerEmail && session.customer) {
+        try {
+          const customer = await stripe.customers.retrieve(session.customer);
+          customerEmail = customer.email;
+          customerName = customerName || customer.name;
+        } catch (err) {
+          console.error('Error fetching customer:', err);
+        }
+      }
+
       // Save payment info to Supabase
       try {
         const { error } = await supabase.from('payments').insert([
@@ -57,10 +72,10 @@ export default async function handler(req, res) {
             stripe_payment_intent: session.payment_intent,
             stripe_subscription_id: session.subscription || null,
             stripe_customer_id: session.customer || null,
-            email: session.customer_email,
-            name: session.metadata.customerName,
-            service_type: session.metadata.serviceType,
-            quantity: parseInt(session.metadata.quantity),
+            email: customerEmail || 'unknown@email.com', // Fallback
+            name: customerName || 'Unknown',
+            service_type: session.metadata?.serviceType || 'unknown',
+            quantity: parseInt(session.metadata?.quantity || 1),
             amount: session.amount_total / 100, // Convert from cents
             status: 'completed',
             payment_status: session.payment_status,
