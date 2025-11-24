@@ -90,10 +90,33 @@ export const handler = async (event) => {
       console.log('Created new customer:', customer.id);
     }
 
+    // Check if any item has a coupon code
+    const couponItem = items.find(item => item.metadata?.couponCode);
+    const couponCode = couponItem?.metadata?.couponCode;
+
+    // Filter out prepay items from line items (they're just coupon holders)
+    const checkoutLineItems = items
+      .filter(item => item.type !== 'prepay')
+      .map(item => ({
+        price_data: {
+          currency: 'usd',
+          product_data: {
+            name: item.name,
+            description: item.description || '',
+            metadata: {
+              type: item.type || 'service',
+              category: item.category || 'regular',
+            }
+          },
+          unit_amount: Math.round(item.price * 100),
+        },
+        quantity: item.quantity || 1,
+      }));
+
     // Create Stripe Checkout Session
-    const session = await stripe.checkout.sessions.create({
+    const sessionConfig = {
       payment_method_types: ['card'],
-      line_items: lineItems,
+      line_items: checkoutLineItems,
       mode: 'payment', // Always use payment mode for now
       customer: customer.id,
       
@@ -108,6 +131,7 @@ export const handler = async (event) => {
         item_count: items.length.toString(),
         primary_service: items[0]?.name || '',
         primary_price: items[0]?.price.toString() || '',
+        coupon_code: couponCode || '',
         // Add booking info if provided
         ...(bookingInfo && {
           pickup_address: bookingInfo.address || '',
@@ -121,7 +145,16 @@ export const handler = async (event) => {
       billing_address_collection: 'auto',
       success_url: `${process.env.VITE_APP_URL || process.env.URL}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.VITE_APP_URL || process.env.URL}/payment-cancel`,
-    });
+    };
+
+    // Add coupon if present
+    if (couponCode) {
+      sessionConfig.discounts = [{
+        coupon: couponCode,
+      }];
+    }
+
+    const session = await stripe.checkout.sessions.create(sessionConfig);
 
     return {
       statusCode: 200,

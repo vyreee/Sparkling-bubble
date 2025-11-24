@@ -6,6 +6,11 @@ export interface CartItem {
   category?: string; // e.g., 'regular', 'weekly', 'senior', 'senior_weekly'
   quantity: number;
   description?: string;
+  metadata?: {
+    couponCode?: string;
+    weeks?: number;
+    savings?: number;
+  };
 }
 
 export interface Cart {

@@ -20,7 +20,7 @@ export default function Bundles() {
       name: 'Family of Two / Light Laundry',
       subtitle: 'For couples and small households.',
       bundle: '2 Medium Bags',
-      weeklyPrice: '$52',
+      weeklyPrice: 52,
       savings: 'saves $4',
       regularValue: '$56',
       greatFor: 'Couples, adults working full-time',
@@ -107,8 +107,20 @@ export default function Bundles() {
   };
 
   const prepayBundles = {
-    fourWeeks: { weeks: 4, save: '$10' },
-    twelveWeeks: { weeks: 12, save: '$50' },
+    fourWeeks: { 
+      weeks: 4, 
+      save: '$10',
+      couponCode: '7BwQRe76', // 4 weeks coupon ID from Stripe
+      savings: 10,
+      description: '4 weeks of service prepaid'
+    },
+    twelveWeeks: { 
+      weeks: 12, 
+      save: '$50',
+      couponCode: '4J9TKJNV', // 12 weeks coupon ID from Stripe
+      savings: 50,
+      description: '12 weeks of service prepaid'
+    },
   };
 
   return (
@@ -151,7 +163,12 @@ export default function Bundles() {
                     <p className="text-sm text-gray-700">{bundle.greatFor}</p>
                   </div>
                   <button 
-                    onClick={() => addItem({ name: bundle.name, price: bundle.weeklyPrice, type: 'bundle', description: bundle.bundle })}
+                    onClick={() => addItem({ 
+                      name: bundle.name, 
+                      price: bundle.weeklyPrice, 
+                      type: 'bundle', 
+                      description: bundle.bundle 
+                    })}
                     className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
                   >
                     <ShoppingCart className="w-5 h-5" />
@@ -214,9 +231,23 @@ export default function Bundles() {
               <p className="text-5xl font-bold text-gray-900 mb-2">{prepayBundles.fourWeeks.weeks}</p>
               <p className="text-xl text-gray-700 mb-4">weeks prepaid</p>
               <p className="text-2xl font-bold text-green-600 mb-4">Save {prepayBundles.fourWeeks.save}</p>
-              <button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-lg">
+              <button 
+                onClick={() => addItem({ 
+                  name: `${prepayBundles.fourWeeks.weeks} Weeks Prepaid - Save ${prepayBundles.fourWeeks.save}`,
+                  price: 0,
+                  type: 'prepay',
+                  category: 'coupon',
+                  description: prepayBundles.fourWeeks.description,
+                  metadata: {
+                    couponCode: prepayBundles.fourWeeks.couponCode,
+                    weeks: prepayBundles.fourWeeks.weeks,
+                    savings: prepayBundles.fourWeeks.savings
+                  }
+                })}
+                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
+              >
                 <Ticket className="w-5 h-5" />
-                Use Coupon
+                Add to Cart
               </button>
             </div>
             <div className="bg-gradient-to-br from-green-50 to-teal-50 rounded-xl p-6 text-center border-2 border-green-200">
@@ -224,9 +255,23 @@ export default function Bundles() {
               <p className="text-5xl font-bold text-gray-900 mb-2">{prepayBundles.twelveWeeks.weeks}</p>
               <p className="text-xl text-gray-700 mb-4">weeks prepaid</p>
               <p className="text-2xl font-bold text-green-600 mb-4">Save {prepayBundles.twelveWeeks.save}</p>
-              <button className="w-full bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-lg">
+              <button 
+                onClick={() => addItem({ 
+                  name: `${prepayBundles.twelveWeeks.weeks} Weeks Prepaid - Save ${prepayBundles.twelveWeeks.save}`,
+                  price: 0,
+                  type: 'prepay',
+                  category: 'coupon',
+                  description: prepayBundles.twelveWeeks.description,
+                  metadata: {
+                    couponCode: prepayBundles.twelveWeeks.couponCode,
+                    weeks: prepayBundles.twelveWeeks.weeks,
+                    savings: prepayBundles.twelveWeeks.savings
+                  }
+                })}
+                className="w-full bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
+              >
                 <Ticket className="w-5 h-5" />
-                Use Coupon
+                Add to Cart
               </button>
             </div>
           </div>
