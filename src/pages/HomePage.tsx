@@ -1,5 +1,6 @@
 import Hero from '../components/Hero';
 import Services from '../components/Services';
+import BirthdaySurprise from '../components/BirthdaySurprise';
 import HowItWorks from '../components/HowItWorks';
 import Pricing from '../components/Pricing';
 import Bundles from '../components/Bundles';
@@ -11,6 +12,7 @@ export default function HomePage() {
     <div className="pt-24">
       <Hero />
       <Services />
+      <BirthdaySurprise />
       <section id="pricing">
         <Pricing />
       </section>
