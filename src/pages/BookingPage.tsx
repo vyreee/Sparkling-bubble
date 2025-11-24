@@ -281,6 +281,16 @@ export default function BookingPage() {
               </li>
             </ul>
           </div>
+
+          <div className="mt-6 p-6 bg-amber-50 rounded-xl border border-amber-200">
+            <h3 className="font-bold text-gray-900 mb-2">⚠️ Important: No Cancellations</h3>
+            <p className="text-gray-700 mb-2">
+              Once your pickup is scheduled, it cannot be cancelled or rescheduled. Please ensure your selected date and time work for you.
+            </p>
+            <p className="text-sm text-gray-600">
+              <strong>Weekly Subscriptions:</strong> To cancel a recurring subscription, email us at <a href="mailto:info@freshncleanlaundry.com" className="text-blue-600 hover:underline font-semibold">info@freshncleanlaundry.com</a>
+            </p>
+          </div>
         </div>
       </div>
     </div>

@@ -18,6 +18,10 @@ export default function FAQ() {
       question: 'What detergents do you use?',
       answer: 'We use high-quality, name-brand hypoallergenic detergents. You can upgrade to our premium Free and Clear Fragrance Free Eco Detergent (plant-based) by selecting the corresponding add-on.',
     },
+    {
+      question: 'How do I cancel my weekly subscription?',
+      answer: 'To cancel your recurring weekly subscription, email us at info@freshncleanlaundry.com with your subscription details. We\'ll process your cancellation request promptly. Note: Individual scheduled pickups cannot be cancelled once booked.',
+    },
   ];
 
   return (
