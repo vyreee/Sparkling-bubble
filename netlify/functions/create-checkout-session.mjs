@@ -135,7 +135,6 @@ export const handler = async (event) => {
         customer_email: customerEmail,
         is_subscription: isSubscription.toString(),
         service_category: serviceCategory,
-        service_items: JSON.stringify(items), // Full cart details
         item_count: items.length.toString(),
         primary_service: items[0]?.name || '',
         primary_price: items[0]?.price.toString() || '',
