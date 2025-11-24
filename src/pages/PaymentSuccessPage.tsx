@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
-import { CheckCircle, Home, Mail, Sparkles } from 'lucide-react';
+import { CheckCircle, Home, Mail, Sparkles, Calendar } from 'lucide-react';
 
 export default function PaymentSuccessPage() {
   const [searchParams] = useSearchParams();
@@ -44,28 +44,17 @@ export default function PaymentSuccessPage() {
           </h1>
           
           <p className="text-xl text-gray-700 mb-6">
-            Thank you for choosing our laundry service!
+            Thank you for your payment! Now let's schedule your pickup.
           </p>
 
           <div className="bg-green-50 rounded-2xl p-6 mb-8">
             <div className="flex items-center justify-center gap-2 mb-3">
               <Mail className="w-5 h-5 text-green-600" />
-              <h2 className="text-lg font-semibold text-gray-900">What's Next?</h2>
+              <h2 className="text-lg font-semibold text-gray-900">Next Step: Schedule Your Pickup</h2>
             </div>
-            <ul className="text-left space-y-3 text-gray-700 max-w-md mx-auto">
-              <li className="flex items-start gap-2">
-                <span className="text-green-600 font-bold">✓</span>
-                <span>You'll receive an email confirmation shortly</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-green-600 font-bold">✓</span>
-                <span>Our team will contact you to schedule pickup</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-green-600 font-bold">✓</span>
-                <span>Your laundry will be fresh and clean within 24-48 hours</span>
-              </li>
-            </ul>
+            <p className="text-gray-700 max-w-md mx-auto">
+              Click the button below to choose your preferred pickup date and time. We'll come to your door to collect your laundry!
+            </p>
           </div>
 
           {sessionId && (
@@ -78,17 +67,18 @@ export default function PaymentSuccessPage() {
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
+              to={`/book${sessionId ? `?session_id=${sessionId}` : ''}`}
+              className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white px-10 py-5 rounded-full text-xl font-bold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+            >
+              <Calendar className="w-6 h-6" />
+              Schedule Pickup Now
+            </Link>
+            <Link
               to="/"
-              className="inline-flex items-center justify-center gap-2 bg-green-500 text-white px-8 py-4 rounded-full text-lg font-bold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+              className="inline-flex items-center justify-center gap-2 bg-gray-500 text-white px-8 py-4 rounded-full text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
             >
               <Home className="w-5 h-5" />
               Back to Home
-            </Link>
-            <Link
-              to="/book"
-              className="inline-flex items-center justify-center gap-2 bg-blue-500 text-white px-8 py-4 rounded-full text-lg font-bold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-            >
-              Book Another Service
             </Link>
           </div>
         </div>

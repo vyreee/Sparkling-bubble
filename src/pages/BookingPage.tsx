@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Calendar, MapPin, Package, User, Phone, Mail, Clock } from 'lucide-react';
 import { createClient } from '@supabase/supabase-js';
 
@@ -8,6 +9,8 @@ const supabase = createClient(
 );
 
 export default function BookingPage() {
+  const [searchParams] = useSearchParams();
+  const sessionId = searchParams.get('session_id');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -20,6 +23,39 @@ export default function BookingPage() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState('');
+  const [paymentInfo, setPaymentInfo] = useState<any>(null);
+
+  // Fetch payment info if session_id exists
+  useEffect(() => {
+    if (sessionId) {
+      fetchPaymentInfo();
+    }
+  }, [sessionId]);
+
+  const fetchPaymentInfo = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('payments')
+        .select('*')
+        .eq('stripe_session_id', sessionId)
+        .single();
+
+      if (error) throw error;
+      
+      if (data) {
+        setPaymentInfo(data);
+        // Pre-fill form with payment info
+        setFormData(prev => ({
+          ...prev,
+          name: data.name || '',
+          email: data.email || '',
+          serviceType: data.service_type || 'small',
+        }));
+      }
+    } catch (error) {
+      console.error('Error fetching payment info:', error);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,6 +76,8 @@ export default function BookingPage() {
             pickup_time: formData.pickupTime,
             notes: formData.notes,
             status: 'pending',
+            payment_id: paymentInfo?.id || null,
+            stripe_session_id: sessionId || null,
           },
         ]);
 
@@ -73,8 +111,13 @@ export default function BookingPage() {
             Schedule Your Pickup
           </h1>
           <p className="text-xl text-gray-700">
-            Fill out the form below and we'll contact you to confirm your booking
+            {paymentInfo ? 'Payment confirmed! Now schedule your pickup time.' : 'Fill out the form below and we\'ll contact you to confirm your booking'}
           </p>
+          {paymentInfo && (
+            <div className="mt-4 inline-block bg-green-100 text-green-800 px-6 py-2 rounded-full font-semibold">
+              ✓ Payment Received: ${paymentInfo.amount}
+            </div>
+          )}
         </div>
 
         <div className="bg-white rounded-2xl shadow-2xl p-8 md:p-12">

@@ -16,10 +16,9 @@ export default function Pricing() {
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-12">
           <img
-            src="/image copy copy copy.png"
+            src="/freshnclean-logo.png"
             alt="Fresh N Clean Laundry Logo"
             className="h-40 w-auto mx-auto mb-6"
-            style={{ imageRendering: 'crisp-edges' }}
           />
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
             Simple, Transparent Pricing

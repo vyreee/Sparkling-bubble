@@ -6,10 +6,9 @@ export default function Hero() {
       <div className="relative z-10 max-w-5xl mx-auto px-6 py-20 text-center">
         <div className="flex items-center justify-center mb-8">
           <img
-            src="/image copy copy copy.png"
+            src="/freshnclean-logo.png"
             alt="Fresh N Clean Laundry Services"
             className="h-64 w-auto mx-auto"
-            style={{ imageRendering: 'crisp-edges' }}
           />
         </div>
 

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Calendar, CreditCard, Menu, X } from 'lucide-react';
+import { CreditCard, Menu, X } from 'lucide-react';
 import { useState } from 'react';
 
 export default function Header() {
@@ -36,18 +36,11 @@ export default function Header() {
 
         <div className="hidden md:flex items-center gap-4">
           <Link
-            to="/book"
+            to="/pay"
             className="flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white hover:shadow-lg transition-all font-semibold"
           >
-            <Calendar className="w-5 h-5" />
-            <span>Book Now</span>
-          </Link>
-          <Link
-            to="/pay"
-            className="flex items-center gap-2 px-6 py-3 rounded-full bg-green-500 text-white hover:bg-green-600 transition-colors font-semibold"
-          >
             <CreditCard className="w-5 h-5" />
-            <span>Pay</span>
+            <span>Book & Pay Now</span>
           </Link>
         </div>
       </div>
@@ -68,18 +61,11 @@ export default function Header() {
               FAQ
             </a>
             <Link
-              to="/book"
+              to="/pay"
               className="flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white justify-center font-semibold"
             >
-              <Calendar className="w-5 h-5" />
-              <span>Book Now</span>
-            </Link>
-            <Link
-              to="/pay"
-              className="flex items-center gap-2 px-6 py-3 rounded-full bg-green-500 text-white justify-center font-semibold"
-            >
               <CreditCard className="w-5 h-5" />
-              <span>Pay</span>
+              <span>Book & Pay Now</span>
             </Link>
           </nav>
         </div>
