@@ -85,19 +85,27 @@ export const handler = async (event) => {
         name: customerName,
         metadata: {
           source: 'laundry_service_website',
+          free_bag_claimed: 'false',
         },
       });
       console.log('Created new customer:', customer.id);
     }
+    
+    // Check if this order claims the free bag
+    const claimingFreeBag = items.some(item => item.metadata?.claimingFreeBag === true);
+    if (claimingFreeBag && customer.metadata?.free_bag_claimed !== 'true') {
+      // Update customer to mark free bag as claimed
+      await stripe.customers.update(customer.id, {
+        metadata: {
+          ...customer.metadata,
+          free_bag_claimed: 'true',
+          free_bag_claimed_date: new Date().toISOString(),
+        },
+      });
+    }
 
-    // Check if any item has a coupon code
-    const couponItem = items.find(item => item.metadata?.couponCode);
-    const couponCode = couponItem?.metadata?.couponCode;
-
-    // Filter out prepay items from line items (they're just coupon holders)
-    const checkoutLineItems = items
-      .filter(item => item.type !== 'prepay')
-      .map(item => ({
+    // Build line items for Stripe
+    const checkoutLineItems = items.map(item => ({
         price_data: {
           currency: 'usd',
           product_data: {
@@ -131,7 +139,7 @@ export const handler = async (event) => {
         item_count: items.length.toString(),
         primary_service: items[0]?.name || '',
         primary_price: items[0]?.price.toString() || '',
-        coupon_code: couponCode || '',
+        claiming_free_bag: claimingFreeBag ? 'true' : 'false',
         // Add booking info if provided
         ...(bookingInfo && {
           pickup_address: bookingInfo.address || '',
@@ -146,13 +154,6 @@ export const handler = async (event) => {
       success_url: `${process.env.VITE_APP_URL || process.env.URL}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.VITE_APP_URL || process.env.URL}/payment-cancel`,
     };
-
-    // Add coupon if present
-    if (couponCode) {
-      sessionConfig.discounts = [{
-        coupon: couponCode,
-      }];
-    }
 
     const session = await stripe.checkout.sessions.create(sessionConfig);
 

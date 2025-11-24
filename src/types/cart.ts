@@ -10,6 +10,8 @@ export interface CartItem {
     couponCode?: string;
     weeks?: number;
     savings?: number;
+    isMultiplier?: boolean;
+    claimingFreeBag?: boolean;
   };
 }
 

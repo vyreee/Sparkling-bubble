@@ -1,20 +1,53 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { CheckCircle, Home, Mail, Sparkles, Calendar } from 'lucide-react';
+import FirstTimeCustomerModal from '../components/FirstTimeCustomerModal';
+import { useCart } from '../context/CartContext';
 
 export default function PaymentSuccessPage() {
   const [searchParams] = useSearchParams();
   const sessionId = searchParams.get('session_id');
   const [loading, setLoading] = useState(true);
+  const [showFirstTimeModal, setShowFirstTimeModal] = useState(false);
+  const [customerEmail, setCustomerEmail] = useState('');
+  const { addItem } = useCart();
 
   useEffect(() => {
-    // Optional: Verify the session with your backend
-    if (sessionId) {
-      // You can make an API call here to verify the payment
-      setTimeout(() => setLoading(false), 1000);
-    } else {
+    const checkFirstTimeCustomer = async () => {
+      if (sessionId) {
+        try {
+          // Get session details from Stripe to retrieve customer email
+          const response = await fetch('/api/get-session-details', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sessionId }),
+          });
+          
+          const sessionData = await response.json();
+          const email = sessionData.customer_email;
+          setCustomerEmail(email);
+          
+          // Check if first-time customer
+          const checkResponse = await fetch('/api/check-first-time-customer', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email }),
+          });
+          
+          const result = await checkResponse.json();
+          
+          // Show modal if eligible for free bag
+          if (result.eligible) {
+            setShowFirstTimeModal(true);
+          }
+        } catch (error) {
+          console.error('Error checking first-time customer:', error);
+        }
+      }
       setLoading(false);
-    }
+    };
+
+    checkFirstTimeCustomer();
   }, [sessionId]);
 
   if (loading) {
@@ -83,6 +116,46 @@ export default function PaymentSuccessPage() {
           </div>
         </div>
       </div>
+
+      {/* First Time Customer Modal */}
+      <FirstTimeCustomerModal
+        isOpen={showFirstTimeModal}
+        onClose={() => setShowFirstTimeModal(false)}
+        onClaim={async () => {
+          // Add free bag item to cart with metadata
+          addItem({
+            name: 'Free Laundry Bag - First Time Customer',
+            price: 0,
+            type: 'addon',
+            category: 'free_gift',
+            description: 'Complimentary laundry bag for first-time customers',
+            metadata: {
+              claimingFreeBag: true,
+            },
+          });
+
+          // Update customer metadata in Stripe
+          try {
+            await fetch('/api/create-checkout-session', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                items: [{
+                  name: 'Free Bag Claim',
+                  price: 0,
+                  type: 'addon',
+                  quantity: 1,
+                  metadata: { claimingFreeBag: true },
+                }],
+                customerEmail,
+                customerName: 'Free Bag Claim',
+              }),
+            });
+          } catch (error) {
+            console.error('Error claiming free bag:', error);
+          }
+        }}
+      />
     </div>
   );
 }

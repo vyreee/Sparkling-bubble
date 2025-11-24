@@ -1,4 +1,4 @@
-import { Users, Home, Baby, School, Heart, Sparkles, Gift, Calendar, ShoppingCart, Ticket } from 'lucide-react';
+import { Users, Home, Baby, School, Heart, Sparkles, Gift, Calendar, ShoppingCart } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 
 export default function Bundles() {
@@ -106,23 +106,6 @@ export default function Bundles() {
     gradient: 'from-yellow-400 via-orange-500 to-red-500',
   };
 
-  const prepayBundles = {
-    fourWeeks: { 
-      weeks: 4, 
-      save: '$10',
-      couponCode: '7BwQRe76', // 4 weeks coupon ID from Stripe
-      savings: 10,
-      description: '4 weeks of service prepaid'
-    },
-    twelveWeeks: { 
-      weeks: 12, 
-      save: '$50',
-      couponCode: '4J9TKJNV', // 12 weeks coupon ID from Stripe
-      savings: 50,
-      description: '12 weeks of service prepaid'
-    },
-  };
-
   return (
     <section className="py-20 bg-gradient-to-br from-gray-50 to-blue-50">
       <div className="max-w-7xl mx-auto px-6">
@@ -217,62 +200,6 @@ export default function Bundles() {
                 Add to Cart
               </button>
               </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12">
-          <h3 className="text-3xl font-bold text-gray-900 mb-8 text-center">
-            Prepay Bundles
-          </h3>
-          <div className="grid md:grid-cols-2 gap-8 max-w-3xl mx-auto">
-            <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6 text-center border-2 border-blue-200">
-              <Calendar className="w-12 h-12 text-blue-600 mx-auto mb-4" />
-              <p className="text-5xl font-bold text-gray-900 mb-2">{prepayBundles.fourWeeks.weeks}</p>
-              <p className="text-xl text-gray-700 mb-4">weeks prepaid</p>
-              <p className="text-2xl font-bold text-green-600 mb-4">Save {prepayBundles.fourWeeks.save}</p>
-              <button 
-                onClick={() => addItem({ 
-                  name: `${prepayBundles.fourWeeks.weeks} Weeks Prepaid - Save ${prepayBundles.fourWeeks.save}`,
-                  price: 0,
-                  type: 'prepay',
-                  category: 'coupon',
-                  description: prepayBundles.fourWeeks.description,
-                  metadata: {
-                    couponCode: prepayBundles.fourWeeks.couponCode,
-                    weeks: prepayBundles.fourWeeks.weeks,
-                    savings: prepayBundles.fourWeeks.savings
-                  }
-                })}
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
-              >
-                <Ticket className="w-5 h-5" />
-                Add to Cart
-              </button>
-            </div>
-            <div className="bg-gradient-to-br from-green-50 to-teal-50 rounded-xl p-6 text-center border-2 border-green-200">
-              <Gift className="w-12 h-12 text-green-600 mx-auto mb-4" />
-              <p className="text-5xl font-bold text-gray-900 mb-2">{prepayBundles.twelveWeeks.weeks}</p>
-              <p className="text-xl text-gray-700 mb-4">weeks prepaid</p>
-              <p className="text-2xl font-bold text-green-600 mb-4">Save {prepayBundles.twelveWeeks.save}</p>
-              <button 
-                onClick={() => addItem({ 
-                  name: `${prepayBundles.twelveWeeks.weeks} Weeks Prepaid - Save ${prepayBundles.twelveWeeks.save}`,
-                  price: 0,
-                  type: 'prepay',
-                  category: 'coupon',
-                  description: prepayBundles.twelveWeeks.description,
-                  metadata: {
-                    couponCode: prepayBundles.twelveWeeks.couponCode,
-                    weeks: prepayBundles.twelveWeeks.weeks,
-                    savings: prepayBundles.twelveWeeks.savings
-                  }
-                })}
-                className="w-full bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
-              >
-                <Ticket className="w-5 h-5" />
-                Add to Cart
-              </button>
             </div>
           </div>
         </div>
