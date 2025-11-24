@@ -84,18 +84,45 @@ export default async function handler(req, res) {
     }
 
     // Determine if this is a subscription or one-time payment
+    // Check the actual price to see if it's recurring
     // Subscriptions: all bundles, weekly subscriptions, senior/military weekly
-    // One-time: basic services without _subscription suffix
-    const isSubscription = serviceType.includes('subscription') || 
-                          serviceType.includes('bundle') || 
-                          serviceType.includes('senior_weekly');
+    // One-time: basic services (small, medium, large without suffixes)
+    const oneTimeServices = ['small', 'medium', 'large'];
+    const isSubscription = !oneTimeServices.includes(serviceType);
+    
+    console.log('Service Type:', serviceType, 'Is Subscription:', isSubscription, 'Price ID:', selectedPriceId);
+    
+    // Create or retrieve customer in Stripe
+    let customer;
+    
+    // Check if customer already exists by email
+    const existingCustomers = await stripe.customers.list({
+      email: customerEmail,
+      limit: 1,
+    });
+    
+    if (existingCustomers.data.length > 0) {
+      // Use existing customer
+      customer = existingCustomers.data[0];
+      console.log('Found existing customer:', customer.id);
+    } else {
+      // Create new customer
+      customer = await stripe.customers.create({
+        email: customerEmail,
+        name: customerName,
+        metadata: {
+          source: 'laundry_service_website',
+        },
+      });
+      console.log('Created new customer:', customer.id);
+    }
     
     // Create Stripe Checkout Session using your actual products
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: lineItems,
       mode: isSubscription ? 'subscription' : 'payment',
-      customer_email: customerEmail,
+      customer: customer.id,
       metadata: {
         customerName: customerName,
         serviceType: serviceType,
