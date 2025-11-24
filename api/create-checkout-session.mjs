@@ -9,88 +9,52 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { serviceType, quantity, addOns = [], customerEmail, customerName } = req.body;
+    const { items, customerEmail, customerName, customerPhone, bookingInfo } = req.body;
 
-    // Map all service types to their Stripe Price IDs
-    const priceIdMap = {
-      // Basic Services - One-Time
-      small: process.env.STRIPE_PRICE_SMALL_BAG,
-      medium: process.env.STRIPE_PRICE_MEDIUM_BAG,
-      large: process.env.STRIPE_PRICE_LARGE_BAG,
-      
-      // Weekly Subscriptions
-      small_subscription: process.env.STRIPE_PRICE_SMALL_SUBSCRIPTION,
-      medium_subscription: process.env.STRIPE_PRICE_MEDIUM_SUBSCRIPTION,
-      large_subscription: process.env.STRIPE_PRICE_LARGE_SUBSCRIPTION,
-      
-      // Senior/Military
-      small_senior: process.env.STRIPE_PRICE_SMALL_SENIOR,
-      medium_senior: process.env.STRIPE_PRICE_MEDIUM_SENIOR,
-      large_senior: process.env.STRIPE_PRICE_LARGE_SENIOR,
-      
-      // Senior/Military Weekly
-      small_senior_weekly: process.env.STRIPE_PRICE_SMALL_SENIOR_WEEKLY,
-      medium_senior_weekly: process.env.STRIPE_PRICE_MEDIUM_SENIOR_WEEKLY,
-      large_senior_weekly: process.env.STRIPE_PRICE_LARGE_SENIOR_WEEKLY,
-      
-      // Bundles
-      bundle_household: process.env.STRIPE_PRICE_BUNDLE_HOUSEHOLD,
-      bundle_family_two: process.env.STRIPE_PRICE_BUNDLE_FAMILY_TWO,
-      bundle_busy_family: process.env.STRIPE_PRICE_BUNDLE_BUSY_FAMILY,
-      bundle_large_family: process.env.STRIPE_PRICE_BUNDLE_LARGE_FAMILY,
-      bundle_big_wash: process.env.STRIPE_PRICE_BUNDLE_BIG_WASH,
-      bundle_student: process.env.STRIPE_PRICE_BUNDLE_STUDENT,
-      bundle_moms_day: process.env.STRIPE_PRICE_BUNDLE_MOMS_DAY,
-      bundle_linens: process.env.STRIPE_PRICE_BUNDLE_LINENS,
-      bundle_ultimate: process.env.STRIPE_PRICE_BUNDLE_ULTIMATE,
-    };
-
-    // Map add-ons to their Price IDs
-    const addOnPriceMap = {
-      hangdry: process.env.STRIPE_PRICE_ADDON_HANGDRY,
-      eco: process.env.STRIPE_PRICE_ADDON_ECO,
-      rush: process.env.STRIPE_PRICE_ADDON_RUSH,
-    };
-
-    // Get the main service Price ID
-    const selectedPriceId = priceIdMap[serviceType];
-    
-    if (!selectedPriceId) {
-      return res.status(400).json({ 
-        error: 'Invalid service type or missing Price ID configuration',
-        serviceType: serviceType 
-      });
+    // Validate required fields
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ error: 'Items array is required' });
     }
 
-    // Build line items array
-    const lineItems = [
-      {
-        price: selectedPriceId,
-        quantity: quantity,
-      }
-    ];
-
-    // Add add-ons to line items
-    if (addOns && addOns.length > 0) {
-      addOns.forEach(addonId => {
-        const addonPriceId = addOnPriceMap[addonId];
-        if (addonPriceId) {
-          lineItems.push({
-            price: addonPriceId,
-            quantity: quantity, // Same quantity as main service
-          });
-        }
-      });
+    if (!customerEmail || !customerName) {
+      return res.status(400).json({ error: 'Customer email and name are required' });
     }
 
-    // Determine if this is a subscription or one-time payment
-    // Check the actual price to see if it's recurring
-    // Subscriptions: all bundles, weekly subscriptions, senior/military weekly
-    // One-time: basic services (small, medium, large without suffixes)
-    const oneTimeServices = ['small', 'medium', 'large'];
-    const isSubscription = !oneTimeServices.includes(serviceType);
-    
-    console.log('Service Type:', serviceType, 'Is Subscription:', isSubscription, 'Price ID:', selectedPriceId);
+    // Detect if this is a subscription
+    const isSubscription = items.some(item => 
+      item.category?.includes('weekly') || 
+      item.category?.includes('senior_weekly') ||
+      item.type === 'bundle' ||
+      item.name.toLowerCase().includes('weekly') ||
+      item.name.toLowerCase().includes('subscription')
+    );
+
+    // Get primary service category
+    const serviceCategory = items[0]?.category || items[0]?.type || 'regular';
+
+    // Create line items for Stripe using price_data (dynamic pricing)
+    const lineItems = items.map(item => ({
+      price_data: {
+        currency: 'usd',
+        product_data: {
+          name: item.name,
+          description: item.description || '',
+          metadata: {
+            type: item.type || 'service',
+            category: item.category || 'regular',
+          }
+        },
+        unit_amount: Math.round(item.price * 100), // Convert to cents
+      },
+      quantity: item.quantity || 1,
+    }));
+
+    console.log('Processing checkout:', {
+      itemCount: items.length,
+      isSubscription,
+      serviceCategory,
+      customerEmail
+    });
     
     // Create or retrieve customer in Stripe
     let customer;
@@ -117,28 +81,45 @@ export default async function handler(req, res) {
       console.log('Created new customer:', customer.id);
     }
     
-    // Create Stripe Checkout Session using your actual products
+    // Create Stripe Checkout Session
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: lineItems,
-      mode: isSubscription ? 'subscription' : 'payment',
+      mode: 'payment', // Always use payment mode for now
       customer: customer.id,
+      
+      // Store subscription info in Stripe metadata
       metadata: {
-        customerName: customerName,
-        serviceType: serviceType,
-        quantity: quantity.toString(),
-        addOns: addOns.join(','),
+        customer_name: customerName,
+        customer_phone: customerPhone || '',
+        customer_email: customerEmail,
+        is_subscription: isSubscription.toString(),
+        service_category: serviceCategory,
+        service_items: JSON.stringify(items), // Full cart details
+        item_count: items.length.toString(),
+        primary_service: items[0]?.name || '',
+        primary_price: items[0]?.price.toString() || '',
+        // Add booking info if provided
+        ...(bookingInfo && {
+          pickup_address: bookingInfo.address || '',
+          pickup_date: bookingInfo.pickupDate || '',
+          pickup_time: bookingInfo.pickupTime || '',
+          weekly_pickup_day: bookingInfo.weeklyPickupDay || '',
+          notes: bookingInfo.notes || '',
+        }),
       },
-      success_url: `${process.env.VITE_APP_URL}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.VITE_APP_URL}/payment-cancel`,
+      
+      billing_address_collection: 'auto',
+      success_url: `${process.env.VITE_APP_URL || 'http://localhost:5173'}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.VITE_APP_URL || 'http://localhost:5173'}/payment-cancel`,
     });
 
     return res.status(200).json({ sessionId: session.id, url: session.url });
   } catch (error) {
     console.error('Error creating checkout session:', error);
     return res.status(500).json({ 
-      error: error.message,
-      details: 'Check that all required Price IDs are configured in your environment variables'
+      error: error.message || 'Failed to create checkout session',
+      details: error.message
     });
   }
 }
