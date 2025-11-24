@@ -55,6 +55,7 @@ export default async function handler(req, res) {
           {
             stripe_session_id: session.id,
             stripe_payment_intent: session.payment_intent,
+            stripe_subscription_id: session.subscription || null,
             email: session.customer_email,
             name: session.metadata.customerName,
             service_type: session.metadata.serviceType,

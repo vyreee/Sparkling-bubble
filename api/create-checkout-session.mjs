@@ -83,11 +83,18 @@ export default async function handler(req, res) {
       });
     }
 
+    // Determine if this is a subscription or one-time payment
+    // Subscriptions: all bundles, weekly subscriptions, senior/military weekly
+    // One-time: basic services without _subscription suffix
+    const isSubscription = serviceType.includes('subscription') || 
+                          serviceType.includes('bundle') || 
+                          serviceType.includes('senior_weekly');
+    
     // Create Stripe Checkout Session using your actual products
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: lineItems,
-      mode: 'payment',
+      mode: isSubscription ? 'subscription' : 'payment',
       customer_email: customerEmail,
       metadata: {
         customerName: customerName,
