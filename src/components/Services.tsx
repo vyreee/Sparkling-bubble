@@ -4,15 +4,6 @@ export default function Services() {
   return (
     <section className="py-20 bg-white">
       <div className="max-w-7xl mx-auto px-6">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-            Ready to Get Started?
-          </h2>
-          <div className="inline-block bg-gradient-to-r from-blue-600 to-teal-600 text-white px-10 py-4 rounded-full text-2xl font-bold shadow-lg">
-            Schedule Your First Pickup
-          </div>
-        </div>
-
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div className="order-2 md:order-1">
             <h3 className="text-3xl font-bold text-gray-900 mb-6">

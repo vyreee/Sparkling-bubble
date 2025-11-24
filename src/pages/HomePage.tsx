@@ -5,6 +5,7 @@ import HowItWorks from '../components/HowItWorks';
 import Pricing from '../components/Pricing';
 import Bundles from '../components/Bundles';
 import FAQ from '../components/FAQ';
+import CancelSubscription from '../components/CancelSubscription';
 import Footer from '../components/Footer';
 
 export default function HomePage() {
@@ -25,6 +26,7 @@ export default function HomePage() {
       <section id="faq">
         <FAQ />
       </section>
+      <CancelSubscription />
       <Footer />
     </div>
   );

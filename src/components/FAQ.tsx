@@ -48,23 +48,6 @@ export default function FAQ() {
             </div>
           ))}
         </div>
-
-        <div className="mt-12 text-center">
-          <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-2xl p-8 shadow-2xl">
-            <h3 className="text-2xl font-bold mb-4">Ready to Start?</h3>
-            <p className="text-lg mb-6">
-              Join hundreds of satisfied customers who have reclaimed their time with Fresh N Clean Laundry.
-            </p>
-            <div className="flex justify-center">
-              <a
-                href="/pay"
-                className="bg-white text-blue-600 px-12 py-5 rounded-full text-xl font-bold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-              >
-                Book & Pay Now
-              </a>
-            </div>
-          </div>
-        </div>
       </div>
     </section>
   );

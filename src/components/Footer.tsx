@@ -65,16 +65,6 @@ export default function Footer() {
                   Privacy & Terms
                 </Link>
               </li>
-              <li>
-                <a 
-                  href="https://billing.stripe.com/p/login/test_00g5kM2Qr5ey3Cg000" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-gray-400 hover:text-emerald-300 transition-colors"
-                >
-                  Cancel Subscription
-                </a>
-              </li>
             </ul>
           </div>
         </div>
