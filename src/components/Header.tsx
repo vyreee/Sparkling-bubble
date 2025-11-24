@@ -1,8 +1,17 @@
 import { Link } from 'react-router-dom';
-import { Calendar, CreditCard, Menu, X, ShoppingCart } from 'lucide-react';
-import { useState } from 'react';
+import { Menu, X, ShoppingCart } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import { useCart } from '../context/CartContext';
 import CartModal from './CartModal';
+
+// Global cart state
+let globalSetIsCartOpen: ((value: boolean) => void) | null = null;
+
+export function openCart() {
+  if (globalSetIsCartOpen) {
+    globalSetIsCartOpen(true);
+  }
+}
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -10,7 +19,16 @@ export default function Header() {
   const { getItemCount } = useCart();
   const cartCount = getItemCount();
 
+  // Set global cart opener
+  useEffect(() => {
+    globalSetIsCartOpen = setIsCartOpen;
+    return () => {
+      globalSetIsCartOpen = null;
+    };
+  }, []);
+
   return (
+    <>
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md shadow-lg">
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
         <Link to="/" className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
@@ -79,8 +97,9 @@ export default function Header() {
           </nav>
         </div>
       )}
-      
-      <CartModal isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
     </header>
+    
+    <CartModal isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+    </>
   );
 }
