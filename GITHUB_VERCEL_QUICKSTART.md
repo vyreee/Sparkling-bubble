@@ -31,7 +31,7 @@ move src\pages\PaymentPageComplete.tsx src\pages\PaymentPage.tsx
 
 # Push to GitHub
 git init
-git remote add origin https://github.com/vyreee/Sparkling-bubble.git
+git remote add origin https://github.com/vyreee/fresh-n-clean-laundry.git
 git add .
 git commit -m "Initial commit: Complete Stripe integration"
 git branch -M main
@@ -45,7 +45,7 @@ git push -u origin main
 1. **Go to:** https://vercel.com
 2. **Sign in** with GitHub
 3. **Click:** "Add New..." → "Project"
-4. **Select:** `vyreee/Sparkling-bubble`
+4. **Select:** `vyreee/fresh-n-clean-laundry`
 5. **Click:** "Import"
 
 ---
@@ -111,7 +111,7 @@ VITE_APP_URL=https://your-vercel-url.vercel.app
 ### Step 4: Deploy & Update URL
 
 1. **Click "Deploy"** - wait 2-3 minutes
-2. **Copy your Vercel URL** (e.g., `https://sparkling-bubble.vercel.app`)
+2. **Copy your Vercel URL** (e.g., `https://fresh-n-clean-laundry.vercel.app`)
 3. **Update `VITE_APP_URL`** in environment variables with your URL
 4. **Redeploy** (Vercel → Deployments → click "..." → Redeploy)
 

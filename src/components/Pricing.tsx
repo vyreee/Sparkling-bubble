@@ -17,7 +17,7 @@ export default function Pricing() {
         <div className="text-center mb-12">
           <img
             src="/image copy copy copy.png"
-            alt="Sparkling Bubble Logo"
+            alt="Fresh N Clean Laundry Logo"
             className="h-40 w-auto mx-auto mb-6"
             style={{ imageRendering: 'crisp-edges' }}
           />

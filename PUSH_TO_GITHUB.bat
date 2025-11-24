@@ -36,10 +36,10 @@ echo 🔗 Step 3: Adding GitHub remote...
 git remote get-url origin >nul 2>&1
 if %errorlevel% equ 0 (
     echo    ℹ️  Remote 'origin' already exists
-    git remote set-url origin https://github.com/vyreee/Sparkling-bubble.git
+    git remote set-url origin https://github.com/vyreee/fresh-n-clean-laundry.git
     echo    ✅ Updated remote URL
 ) else (
-    git remote add origin https://github.com/vyreee/Sparkling-bubble.git
+    git remote add origin https://github.com/vyreee/fresh-n-clean-laundry.git
     echo    ✅ Added remote 'origin'
 )
 
@@ -61,7 +61,7 @@ echo ✅ SUCCESS! Your code is now on GitHub!
 echo.
 echo 🌐 Next steps:
 echo 1. Go to https://vercel.com
-echo 2. Import your repository: vyreee/Sparkling-bubble
+echo 2. Import your repository: vyreee/fresh-n-clean-laundry
 echo 3. Add environment variables from .env.vercel
 echo 4. Deploy!
 echo.

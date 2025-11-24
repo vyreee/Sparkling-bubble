@@ -55,7 +55,7 @@ cd project
 git init
 
 # Add your remote
-git remote add origin https://github.com/vyreee/Sparkling-bubble.git
+git remote add origin https://github.com/vyreee/fresh-n-clean-laundry.git
 
 # Add all files
 git add .
@@ -85,7 +85,7 @@ git push -u origin main
 
 2. **Import Project:**
    - Click "Add New..." → "Project"
-   - Select your repository: `vyreee/Sparkling-bubble`
+   - Select your repository: `vyreee/fresh-n-clean-laundry`
    - Click "Import"
 
 3. **Configure Project:**
@@ -130,7 +130,7 @@ vercel
 # - Set up and deploy? Yes
 # - Which scope? Your account
 # - Link to existing project? No
-# - Project name? sparkling-bubble
+# - Project name? fresh-n-clean-laundry
 # - Directory? ./project
 # - Override settings? No
 
@@ -149,7 +149,7 @@ vercel --prod
 
 ## 🔗 Step 3: Update Environment Variables
 
-After deployment, you'll get a URL like: `https://sparkling-bubble.vercel.app`
+After deployment, you'll get a URL like: `https://fresh-n-clean-laundry.vercel.app`
 
 1. **Update VITE_APP_URL:**
    - In Vercel Dashboard → Settings → Environment Variables
@@ -298,7 +298,7 @@ For production:
 
 Your complete payment system with 21 services is now deployed and ready!
 
-**Your Vercel URL:** https://sparkling-bubble.vercel.app (or similar)
+**Your Vercel URL:** https://fresh-n-clean-laundry.vercel.app (or similar)
 
 **Test it:** Visit `/pay` and complete a test payment!
 

@@ -10,7 +10,7 @@ export default function HowItWorks() {
     {
       icon: Package,
       title: 'Fill & Seal',
-      description: 'Load your clothes into your Sparkling Bubble bag and secure the draw cord.',
+      description: 'Load your clothes into your Fresh N Clean bag and secure the draw cord.',
     },
     {
       icon: Sparkles,
@@ -20,7 +20,7 @@ export default function HowItWorks() {
     {
       icon: Truck,
       title: 'Delivery',
-      description: 'We return your sparkling clean laundry, ready to put away!',
+      description: 'We return your fresh, clean laundry, ready to put away!',
     },
   ];
 

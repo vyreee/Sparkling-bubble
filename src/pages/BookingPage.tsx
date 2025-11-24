@@ -234,7 +234,7 @@ export default function BookingPage() {
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-blue-600 font-bold">3.</span>
-                <span>We'll provide you with our premium Sparkling Bubble bag on delivery</span>
+                <span>We'll provide you with our premium Fresh N Clean bag on delivery</span>
               </li>
             </ul>
           </div>

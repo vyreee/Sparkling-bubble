@@ -8,7 +8,7 @@ export default function FAQ() {
     },
     {
       question: 'Do I need to supply my own bag?',
-      answer: 'On your first order, you can use any suitable bag. After your first service, your cleaned laundry will be returned to you in our durable Sparkling Bubble bag, which you will use for all future pickups.',
+      answer: 'On your first order, you can use any suitable bag. After your first service, your cleaned laundry will be returned to you in our durable Fresh N Clean bag, which you will use for all future pickups.',
     },
     {
       question: 'How much laundry fits in a standard bag?',
@@ -49,7 +49,7 @@ export default function FAQ() {
           <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-2xl p-8 shadow-2xl">
             <h3 className="text-2xl font-bold mb-4">Ready to Start?</h3>
             <p className="text-lg mb-6">
-              Join hundreds of satisfied customers who have reclaimed their time with Sparkling Bubble.
+              Join hundreds of satisfied customers who have reclaimed their time with Fresh N Clean Laundry.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a

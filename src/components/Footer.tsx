@@ -9,7 +9,7 @@ export default function Footer() {
             <div className="flex items-center gap-2 mb-4">
               <Sparkles className="w-8 h-8 text-emerald-300" />
               <div>
-                <h3 className="text-xl font-bold text-emerald-300">SPARKLING BUBBLE</h3>
+                <h3 className="text-xl font-bold text-emerald-300">FRESH N CLEAN</h3>
                 <p className="text-sm text-gray-400">Laundry Services</p>
               </div>
             </div>
@@ -27,7 +27,7 @@ export default function Footer() {
               </div>
               <div className="flex items-center gap-3">
                 <Mail className="w-5 h-5 text-emerald-300" />
-                <span className="text-gray-400">info@sparklingbubble.com</span>
+                <span className="text-gray-400">info@freshncleanlaundry.com</span>
               </div>
               <div className="flex items-center gap-3">
                 <MapPin className="w-5 h-5 text-emerald-300" />
@@ -64,7 +64,7 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-gray-800 pt-8 text-center text-gray-400">
-          <p>&copy; 2024 Sparkling Bubble Laundry Services. All rights reserved.</p>
+          <p>&copy; 2024 Fresh N Clean Laundry Services. All rights reserved.</p>
         </div>
       </div>
     </footer>
