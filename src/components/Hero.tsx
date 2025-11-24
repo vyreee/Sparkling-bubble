@@ -6,7 +6,7 @@ export default function Hero() {
       <div className="relative z-10 max-w-5xl mx-auto px-6 py-20 text-center">
         <div className="flex items-center justify-center mb-8">
           <img
-            src="/freshnclean-logo.png"
+            src="/Fresh N Clean Laundry Service (6 x 8 in).png"
             alt="Fresh N Clean Laundry Services"
             className="h-64 w-auto mx-auto"
           />
