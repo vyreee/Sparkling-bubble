@@ -1,8 +1,6 @@
 export default function Hero() {
   return (
     <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 overflow-hidden">
-      <div className="absolute inset-0 bg-black opacity-5"></div>
-
       <div className="relative z-10 max-w-5xl mx-auto px-6 py-20 text-center">
         <div className="flex items-center justify-center mb-8">
           <img
