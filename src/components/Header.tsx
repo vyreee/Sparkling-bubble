@@ -1,15 +1,20 @@
 import { Link } from 'react-router-dom';
-import { CreditCard, Menu, X } from 'lucide-react';
+import { Calendar, CreditCard, Menu, X, ShoppingCart } from 'lucide-react';
 import { useState } from 'react';
+import { useCart } from '../context/CartContext';
+import CartModal from './CartModal';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const { getItemCount } = useCart();
+  const cartCount = getItemCount();
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md shadow-lg">
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
         <Link to="/" className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
-          Fresh N Clean Laundry
+          Fresh & Clean
         </Link>
 
         <button
@@ -35,12 +40,30 @@ export default function Header() {
         </nav>
 
         <div className="hidden md:flex items-center gap-4">
+          <button 
+            onClick={() => setIsCartOpen(true)}
+            className="relative p-2 text-gray-700 hover:text-blue-600 transition-colors"
+          >
+            <ShoppingCart className="w-6 h-6" />
+            {cartCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                {cartCount}
+              </span>
+            )}
+          </button>
           <Link
-            to="/pay"
+            to="/book"
             className="flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white hover:shadow-lg transition-all font-semibold"
           >
+            <Calendar className="w-5 h-5" />
+            <span>Book Now</span>
+          </Link>
+          <Link
+            to="/pay"
+            className="flex items-center gap-2 px-6 py-3 rounded-full bg-green-500 text-white hover:bg-green-600 transition-colors font-semibold"
+          >
             <CreditCard className="w-5 h-5" />
-            <span>Book & Pay Now</span>
+            <span>Pay</span>
           </Link>
         </div>
       </div>
@@ -60,16 +83,32 @@ export default function Header() {
             <a href="/#faq" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">
               FAQ
             </a>
+            <button 
+              onClick={() => setIsCartOpen(true)}
+              className="flex items-center gap-2 px-6 py-3 rounded-full bg-gray-100 text-gray-700 justify-center font-semibold"
+            >
+              <ShoppingCart className="w-5 h-5" />
+              <span>Cart ({cartCount})</span>
+            </button>
             <Link
-              to="/pay"
+              to="/book"
               className="flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white justify-center font-semibold"
             >
+              <Calendar className="w-5 h-5" />
+              <span>Book Now</span>
+            </Link>
+            <Link
+              to="/pay"
+              className="flex items-center gap-2 px-6 py-3 rounded-full bg-green-500 text-white justify-center font-semibold"
+            >
               <CreditCard className="w-5 h-5" />
-              <span>Book & Pay Now</span>
+              <span>Pay</span>
             </Link>
           </nav>
         </div>
       )}
+      
+      <CartModal isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
     </header>
   );
 }

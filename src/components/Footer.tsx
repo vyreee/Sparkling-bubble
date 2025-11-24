@@ -1,4 +1,5 @@
 import { Sparkles, Mail, Phone, MapPin } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export default function Footer() {
   return (
@@ -9,7 +10,7 @@ export default function Footer() {
             <div className="flex items-center gap-2 mb-4">
               <Sparkles className="w-8 h-8 text-emerald-300" />
               <div>
-                <h3 className="text-xl font-bold text-emerald-300">FRESH N CLEAN</h3>
+                <h3 className="text-xl font-bold text-emerald-300">FRESH & CLEAN</h3>
                 <p className="text-sm text-gray-400">Laundry Services</p>
               </div>
             </div>
@@ -59,12 +60,17 @@ export default function Footer() {
                   FAQ
                 </a>
               </li>
+              <li>
+                <Link to="/policy" className="text-gray-400 hover:text-emerald-300 transition-colors">
+                  Privacy & Terms
+                </Link>
+              </li>
             </ul>
           </div>
         </div>
 
         <div className="border-t border-gray-800 pt-8 text-center text-gray-400">
-          <p>&copy; 2024 Fresh N Clean Laundry Services. All rights reserved.</p>
+          <p>&copy; 2024 Fresh & Clean Laundry Services. All rights reserved.</p>
         </div>
       </div>
     </footer>

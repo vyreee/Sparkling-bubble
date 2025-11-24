@@ -1,7 +1,11 @@
-import { useState } from 'react';
-import { CreditCard, DollarSign, Package, Shield, CheckCircle, Plus } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { CreditCard, DollarSign, Package, Shield, CheckCircle, Plus, ShoppingCart } from 'lucide-react';
+import { useCart } from '../context/CartContext';
+import { useNavigate } from 'react-router-dom';
 
 export default function PaymentPageComplete() {
+  const { items, getTotal, clearCart } = useCart();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -13,6 +17,14 @@ export default function PaymentPageComplete() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState('');
+
+  // Redirect to home if cart is empty
+  useEffect(() => {
+    if (items.length === 0) {
+      // Allow direct access to payment page for manual entry
+      // navigate('/');
+    }
+  }, []);
 
   // Basic Services with all variants
   const services = {
@@ -84,6 +96,15 @@ export default function PaymentPageComplete() {
     setMessage('');
 
     try {
+      // Prepare cart items for Stripe
+      const cartItems = items.length > 0 ? items : [
+        {
+          name: services[formData.serviceType as keyof typeof services].name,
+          price: services[formData.serviceType as keyof typeof services].price,
+          quantity: formData.quantity,
+        }
+      ];
+
       // Call Vercel API to create Stripe checkout session
       const response = await fetch('/api/create-checkout-session', {
         method: 'POST',
@@ -91,11 +112,10 @@ export default function PaymentPageComplete() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          serviceType: formData.serviceType,
-          quantity: formData.quantity,
-          addOns: formData.addOns,
+          items: cartItems,
           customerEmail: formData.email,
           customerName: formData.name,
+          customerPhone: formData.phone,
         }),
       });
 
@@ -103,6 +123,11 @@ export default function PaymentPageComplete() {
 
       if (!response.ok) {
         throw new Error(data.error || 'Failed to create checkout session');
+      }
+
+      // Clear cart on successful checkout creation
+      if (items.length > 0) {
+        clearCart();
       }
 
       // Redirect to Stripe Checkout
@@ -120,10 +145,10 @@ export default function PaymentPageComplete() {
         <div className="text-center mb-12">
           <CreditCard className="w-16 h-16 mx-auto mb-4 text-green-600" />
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            Make a Payment
+            {items.length > 0 ? 'Review & Pay' : 'Make a Payment'}
           </h1>
           <p className="text-xl text-gray-700">
-            Choose your service and pay securely with Stripe
+            {items.length > 0 ? 'Review your cart and complete your purchase' : 'Choose your service and pay securely with Stripe'}
           </p>
         </div>
 
@@ -283,7 +308,7 @@ export default function PaymentPageComplete() {
                 disabled={isSubmitting}
                 className="w-full bg-green-500 text-white py-4 rounded-full text-lg font-bold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isSubmitting ? 'Processing...' : `Pay $${calculateTotal()} Now`}
+                {isSubmitting ? 'Processing...' : `Pay $${items.length > 0 ? getTotal().toFixed(2) : calculateTotal()} Now`}
               </button>
             </form>
           </div>
@@ -292,47 +317,74 @@ export default function PaymentPageComplete() {
           <div className="space-y-6">
             <div className="bg-white rounded-2xl shadow-2xl p-6 sticky top-24">
               <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                <DollarSign className="w-6 h-6 text-green-600" />
+                {items.length > 0 ? <ShoppingCart className="w-6 h-6 text-green-600" /> : <DollarSign className="w-6 h-6 text-green-600" />}
                 Order Summary
               </h3>
 
               <div className="space-y-3 mb-6">
-                <div className="flex justify-between text-gray-700">
-                  <span>Service:</span>
-                  <span className="font-semibold text-right text-sm">
-                    {services[formData.serviceType as keyof typeof services].name}
-                  </span>
-                </div>
-                <div className="flex justify-between text-gray-700">
-                  <span>Price per unit:</span>
-                  <span className="font-semibold">
-                    ${services[formData.serviceType as keyof typeof services].price}
-                  </span>
-                </div>
-                <div className="flex justify-between text-gray-700">
-                  <span>Quantity:</span>
-                  <span className="font-semibold">{formData.quantity}</span>
-                </div>
-                
-                {formData.addOns.length > 0 && (
-                  <div className="border-t pt-3">
-                    <div className="text-sm font-semibold text-gray-700 mb-2">Add-ons:</div>
-                    {formData.addOns.map(addonId => {
-                      const addon = addOnsAvailable.find(a => a.id === addonId);
-                      return addon ? (
-                        <div key={addonId} className="flex justify-between text-sm text-gray-600 ml-2">
-                          <span>• {addon.name}</span>
-                          <span>+${addon.price} × {formData.quantity}</span>
+                {items.length > 0 ? (
+                  // Show cart items
+                  <>
+                    {items.map((item) => (
+                      <div key={item.id} className="flex justify-between text-gray-700 py-2 border-b border-gray-100">
+                        <div className="flex-1">
+                          <div className="font-semibold">{item.name}</div>
+                          {item.description && (
+                            <div className="text-sm text-gray-500">{item.description}</div>
+                          )}
                         </div>
-                      ) : null;
-                    })}
-                  </div>
+                        <div className="text-right ml-4">
+                          <div className="font-semibold">${item.price} × {item.quantity}</div>
+                          <div className="text-sm text-gray-500">${(item.price * item.quantity).toFixed(2)}</div>
+                        </div>
+                      </div>
+                    ))}
+                    <div className="border-t pt-3 flex justify-between text-2xl font-bold text-gray-900">
+                      <span>Total:</span>
+                      <span className="text-green-600">${getTotal().toFixed(2)}</span>
+                    </div>
+                  </>
+                ) : (
+                  // Show manual selection summary
+                  <>
+                    <div className="flex justify-between text-gray-700">
+                      <span>Service:</span>
+                      <span className="font-semibold text-right text-sm">
+                        {services[formData.serviceType as keyof typeof services].name}
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-gray-700">
+                      <span>Price per unit:</span>
+                      <span className="font-semibold">
+                        ${services[formData.serviceType as keyof typeof services].price}
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-gray-700">
+                      <span>Quantity:</span>
+                      <span className="font-semibold">{formData.quantity}</span>
+                    </div>
+                    
+                    {formData.addOns.length > 0 && (
+                      <div className="border-t pt-3">
+                        <div className="text-sm font-semibold text-gray-700 mb-2">Add-ons:</div>
+                        {formData.addOns.map(addonId => {
+                          const addon = addOnsAvailable.find(a => a.id === addonId);
+                          return addon ? (
+                            <div key={addonId} className="flex justify-between text-sm text-gray-600 ml-2">
+                              <span>• {addon.name}</span>
+                              <span>+${addon.price} × {formData.quantity}</span>
+                            </div>
+                          ) : null;
+                        })}
+                      </div>
+                    )}
+                    
+                    <div className="border-t pt-3 flex justify-between text-2xl font-bold text-gray-900">
+                      <span>Total:</span>
+                      <span className="text-green-600">${calculateTotal()}</span>
+                    </div>
+                  </>
                 )}
-                
-                <div className="border-t pt-3 flex justify-between text-2xl font-bold text-gray-900">
-                  <span>Total:</span>
-                  <span className="text-green-600">${calculateTotal()}</span>
-                </div>
               </div>
 
               <div className="bg-green-50 rounded-lg p-4 text-sm text-gray-700">

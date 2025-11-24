@@ -55,22 +55,12 @@ export default function FAQ() {
             <p className="text-lg mb-6">
               Join hundreds of satisfied customers who have reclaimed their time with Fresh N Clean Laundry.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex justify-center">
               <a
-                href="https://calendar.google.com/calendar/u/0/r/eventedit"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-white text-blue-600 px-10 py-4 rounded-full text-lg font-bold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                href="/pay"
+                className="bg-white text-blue-600 px-12 py-5 rounded-full text-xl font-bold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
               >
-                Schedule Your First Pickup
-              </a>
-              <a
-                href="https://stripe.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-green-500 text-white px-10 py-4 rounded-full text-lg font-bold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-              >
-                Pay Now
+                Book & Pay Now
               </a>
             </div>
           </div>

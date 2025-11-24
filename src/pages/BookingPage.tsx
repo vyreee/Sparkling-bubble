@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Calendar, MapPin, Package, User, Phone, Mail, Clock } from 'lucide-react';
+import { Calendar, MapPin, Package, User, Phone, Mail, Clock, XCircle, X, Info } from 'lucide-react';
+import { useCart } from '../context/CartContext';
 import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
@@ -11,6 +12,7 @@ const supabase = createClient(
 export default function BookingPage() {
   const [searchParams] = useSearchParams();
   const sessionId = searchParams.get('session_id');
+  const { items } = useCart();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -24,6 +26,24 @@ export default function BookingPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState('');
   const [paymentInfo, setPaymentInfo] = useState<any>(null);
+  const [showCancelModal, setShowCancelModal] = useState(false);
+
+  // Check if customer has subscription/weekly items
+  const hasSubscription = items.some(item => 
+    item.category === 'weekly' || 
+    item.category === 'senior_weekly' || 
+    item.type === 'bundle' ||
+    item.name.toLowerCase().includes('weekly') ||
+    item.name.toLowerCase().includes('subscription')
+  );
+
+  // Get the day of week from selected date
+  const getSelectedDayOfWeek = () => {
+    if (!formData.pickupDate) return '';
+    const date = new Date(formData.pickupDate);
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    return days[date.getDay()];
+  };
 
   // Fetch payment info if session_id exists
   useEffect(() => {
@@ -63,6 +83,9 @@ export default function BookingPage() {
     setMessage('');
 
     try {
+      // Calculate day of week from pickup date for subscriptions
+      const weeklyPickupDay = hasSubscription ? getSelectedDayOfWeek() : null;
+
       const { error } = await supabase
         .from('bookings')
         .insert([
@@ -75,6 +98,7 @@ export default function BookingPage() {
             pickup_date: formData.pickupDate,
             pickup_time: formData.pickupTime,
             notes: formData.notes,
+            weekly_pickup_day: weeklyPickupDay, // ← Save weekly day for subscriptions
             status: 'pending',
             payment_id: paymentInfo?.id || null,
             stripe_session_id: sessionId || null,
@@ -83,7 +107,42 @@ export default function BookingPage() {
 
       if (error) throw error;
 
-      setMessage('Booking submitted successfully! We will contact you shortly to confirm.');
+      // Also update the payment record with weekly pickup day
+      if (paymentInfo?.id && hasSubscription && weeklyPickupDay) {
+        await supabase
+          .from('payments')
+          .update({ weekly_pickup_day: weeklyPickupDay })
+          .eq('id', paymentInfo.id);
+      }
+
+      // Update Stripe metadata with booking information
+      if (sessionId) {
+        try {
+          await fetch('/api/update-stripe-booking', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              sessionId: sessionId,
+              weeklyPickupDay: weeklyPickupDay,
+              pickupDate: formData.pickupDate,
+              pickupTime: formData.pickupTime,
+              address: formData.address,
+            }),
+          });
+        } catch (stripeError) {
+          console.error('Failed to update Stripe metadata:', stripeError);
+          // Don't fail the booking if Stripe update fails
+        }
+      }
+
+      setMessage(
+        hasSubscription 
+          ? `Booking submitted successfully! Your weekly pickup is scheduled for every ${weeklyPickupDay}. We will contact you shortly to confirm.`
+          : 'Booking submitted successfully! We will contact you shortly to confirm.'
+      );
+      
       setFormData({
         name: '',
         email: '',
@@ -236,6 +295,31 @@ export default function BookingPage() {
               </div>
             </div>
 
+            {/* Subscription Notice */}
+            {hasSubscription && formData.pickupDate && (
+              <div className="bg-gradient-to-r from-purple-50 to-blue-50 border-2 border-purple-200 rounded-xl p-6">
+                <div className="flex items-start gap-3">
+                  <Info className="w-6 h-6 text-purple-600 flex-shrink-0 mt-1" />
+                  <div>
+                    <h4 className="font-bold text-purple-900 mb-2 text-lg">
+                      📅 Weekly Subscription Schedule
+                    </h4>
+                    <p className="text-purple-800 mb-2">
+                      You've selected a <strong>weekly subscription service</strong>. Your chosen pickup date will become your <strong>fixed weekly pickup day</strong>.
+                    </p>
+                    <div className="bg-white/60 rounded-lg p-4 mt-3">
+                      <p className="text-purple-900 font-semibold">
+                        ✓ Your weekly pickup day: <span className="text-purple-600 text-xl">{getSelectedDayOfWeek()}</span>
+                      </p>
+                      <p className="text-sm text-purple-700 mt-2">
+                        We'll pick up your laundry every {getSelectedDayOfWeek()} at your preferred time.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
             <div>
               <label className="text-gray-700 font-semibold mb-2 block">
                 Special Instructions (Optional)
@@ -287,12 +371,77 @@ export default function BookingPage() {
             <p className="text-gray-700 mb-2">
               Once your pickup is scheduled, it cannot be cancelled or rescheduled. Please ensure your selected date and time work for you.
             </p>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-600 mb-4">
               <strong>Weekly Subscriptions:</strong> To cancel a recurring subscription, email us at <a href="mailto:info@freshncleanlaundry.com" className="text-blue-600 hover:underline font-semibold">info@freshncleanlaundry.com</a>
             </p>
+            <button
+              type="button"
+              onClick={() => setShowCancelModal(true)}
+              className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
+            >
+              <XCircle className="w-5 h-5" />
+              Cancel Subscription
+            </button>
           </div>
         </div>
       </div>
+
+      {/* Cancellation Modal */}
+      {showCancelModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 relative animate-in fade-in zoom-in duration-200">
+            <button
+              onClick={() => setShowCancelModal(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <X className="w-6 h-6" />
+            </button>
+
+            <div className="text-center">
+              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <XCircle className="w-10 h-10 text-red-600" />
+              </div>
+
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                Cancel Your Subscription
+              </h2>
+
+              <div className="bg-blue-50 rounded-xl p-6 mb-6 text-left">
+                <h3 className="font-semibold text-gray-900 mb-3">To cancel your subscription:</h3>
+                <ol className="space-y-2 text-gray-700">
+                  <li className="flex items-start gap-2">
+                    <span className="font-bold text-blue-600">1.</span>
+                    <span>Send an email to <a href="mailto:info@freshncleanlaundry.com" className="text-blue-600 hover:underline font-semibold">info@freshncleanlaundry.com</a></span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="font-bold text-blue-600">2.</span>
+                    <span>Include your name and subscription details</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="font-bold text-blue-600">3.</span>
+                    <span>We'll process your cancellation within 24 hours</span>
+                  </li>
+                </ol>
+              </div>
+
+              <a
+                href="mailto:info@freshncleanlaundry.com?subject=Subscription Cancellation Request&body=Hello,%0D%0A%0D%0AI would like to cancel my subscription.%0D%0A%0D%0AName: %0D%0AEmail: %0D%0APhone: %0D%0A%0D%0AThank you."
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 mb-3"
+              >
+                <Mail className="w-5 h-5" />
+                Open Email Client
+              </a>
+
+              <button
+                onClick={() => setShowCancelModal(false)}
+                className="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-lg transition-all duration-200"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
