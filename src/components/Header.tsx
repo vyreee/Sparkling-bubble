@@ -51,20 +51,6 @@ export default function Header() {
               </span>
             )}
           </button>
-          <Link
-            to="/book"
-            className="flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white hover:shadow-lg transition-all font-semibold"
-          >
-            <Calendar className="w-5 h-5" />
-            <span>Book Now</span>
-          </Link>
-          <Link
-            to="/pay"
-            className="flex items-center gap-2 px-6 py-3 rounded-full bg-green-500 text-white hover:bg-green-600 transition-colors font-semibold"
-          >
-            <CreditCard className="w-5 h-5" />
-            <span>Pay</span>
-          </Link>
         </div>
       </div>
 
@@ -85,25 +71,11 @@ export default function Header() {
             </a>
             <button 
               onClick={() => setIsCartOpen(true)}
-              className="flex items-center gap-2 px-6 py-3 rounded-full bg-gray-100 text-gray-700 justify-center font-semibold"
-            >
-              <ShoppingCart className="w-5 h-5" />
-              <span>Cart ({cartCount})</span>
-            </button>
-            <Link
-              to="/book"
               className="flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white justify-center font-semibold"
             >
-              <Calendar className="w-5 h-5" />
-              <span>Book Now</span>
-            </Link>
-            <Link
-              to="/pay"
-              className="flex items-center gap-2 px-6 py-3 rounded-full bg-green-500 text-white justify-center font-semibold"
-            >
-              <CreditCard className="w-5 h-5" />
-              <span>Pay</span>
-            </Link>
+              <ShoppingCart className="w-5 h-5" />
+              <span>View Cart ({cartCount})</span>
+            </button>
           </nav>
         </div>
       )}

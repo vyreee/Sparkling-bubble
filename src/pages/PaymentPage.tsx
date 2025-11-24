@@ -203,8 +203,11 @@ export default function PaymentPageComplete() {
                 />
               </div>
 
-              {/* Service Type Selection */}
-              <div>
+              {/* Only show manual service selection if cart is empty */}
+              {items.length === 0 && (
+                <>
+                  {/* Service Type Selection */}
+                  <div>
                 <label className="flex items-center gap-2 text-gray-700 font-semibold mb-3">
                   <Package className="w-5 h-5 text-green-600" />
                   Select Your Service
@@ -273,7 +276,11 @@ export default function PaymentPageComplete() {
                 />
               </div>
 
-              {/* Add-ons */}
+              </>
+              )}
+
+              {/* Add-ons only shown for manual selection */}
+              {items.length === 0 && (
               <div>
                 <label className="flex items-center gap-2 text-gray-700 font-semibold mb-3">
                   <Plus className="w-5 h-5 text-blue-600" />
@@ -296,6 +303,7 @@ export default function PaymentPageComplete() {
                   ))}
                 </div>
               </div>
+              )}
 
               {message && (
                 <div className={`p-4 rounded-lg ${message.includes('Error') ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>

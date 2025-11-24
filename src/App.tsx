@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { CartProvider } from './context/CartContext';
 import Header from './components/Header';
 import HomePage from './pages/HomePage';
+import CheckoutPage from './pages/CheckoutPage';
 import BookingPage from './pages/BookingPage';
 import PaymentPage from './pages/PaymentPage';
 import PaymentSuccessPage from './pages/PaymentSuccessPage';
@@ -16,6 +17,7 @@ function App() {
           <Header />
           <Routes>
             <Route path="/" element={<HomePage />} />
+            <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="/book" element={<BookingPage />} />
             <Route path="/pay" element={<PaymentPage />} />
             <Route path="/payment-success" element={<PaymentSuccessPage />} />
