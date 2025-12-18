@@ -30,8 +30,8 @@ export default function PaymentPageComplete() {
   const services = {
     // Regular One-time
     small: { name: 'Small Bag (Up to ≈15 lb)', price: 25 },
-    medium: { name: 'Medium Bag (Up to ≈20 lb)', price: 35 },
-    large: { name: 'Large Bag (Up to ≈30 lb)', price: 45 },
+    medium: { name: 'Medium Bag (Up to ≈20 lb)', price: 45 },
+    large: { name: 'Large Bag (Up to ≈30 lb)', price: 65 },
     
     // Weekly Subscriptions
     small_subscription: { name: 'Small Bag - Weekly Subscription', price: 20 },
@@ -223,8 +223,8 @@ export default function PaymentPageComplete() {
                   >
                     <optgroup label="One-Time Service">
                       <option value="small">Small Bag - $25</option>
-                      <option value="medium">Medium Bag - $35</option>
-                      <option value="large">Large Bag - $45</option>
+                      <option value="medium">Medium Bag - $45</option>
+                      <option value="large">Large Bag - $65</option>
                     </optgroup>
                     
                     <optgroup label="Weekly Subscription">

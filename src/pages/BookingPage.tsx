@@ -238,8 +238,8 @@ export default function BookingPage() {
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="small">Small Bag - $25</option>
-                  <option value="medium">Medium Bag - $35</option>
-                  <option value="large">Large Bag - $45</option>
+                  <option value="medium">Medium Bag - $45</option>
+                  <option value="large">Large Bag - $65</option>
                   <option value="subscription">Subscription - $28/week</option>
                 </select>
               </div>

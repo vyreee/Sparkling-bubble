@@ -5,8 +5,8 @@ export default function Pricing() {
   const { addItem } = useCart();
   const pricingTiers = [
     { tier: 'Small Bag', weight: 'Up to ≈15 lb', price: 25, weeklySubscription: 20, seniorDiscount: 15, seniorWeekly: 12 },
-    { tier: 'Medium Bag', weight: 'Up to ≈20 lb', price: 35, weeklySubscription: 30, seniorDiscount: 25, seniorWeekly: 20 },
-    { tier: 'Large Bag', weight: 'Up to ≈30 lb', price: 45, weeklySubscription: 40, seniorDiscount: 35, seniorWeekly: 30 },
+    { tier: 'Medium Bag', weight: 'Up to ≈20 lb', price: 45, weeklySubscription: 30, seniorDiscount: 25, seniorWeekly: 20 },
+    { tier: 'Large Bag', weight: 'Up to ≈30 lb', price: 65, weeklySubscription: 40, seniorDiscount: 35, seniorWeekly: 30 },
   ];
 
   const addOns = [
